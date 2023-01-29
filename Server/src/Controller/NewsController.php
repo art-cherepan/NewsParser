@@ -7,8 +7,6 @@ use App\Repository\NewsRepository;
 use App\Serializer\Normalizer\NewsNormalizer;
 use App\Serializer\Normalizer\NewsRatingNormalizer;
 use App\Services\NewsResolver;
-use App\Services\ParseContentByFile;
-use App\Services\ParseContentByUrl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

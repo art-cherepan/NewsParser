@@ -8,11 +8,12 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class ParseContentByUrl
+class ContentParserByUrl extends ContentParser
 {
     private const NEWS_SITE_URL = 'https://www.rbc.ru/';
 
     private HttpClientInterface $client;
+    private Crawler $crawler;
 
     public function __construct()
     {
@@ -22,18 +23,11 @@ class ParseContentByUrl
     /**
      * @return array<News>
      */
-    public function getNewsFromSource(): array
+    public function getNews(): array
     {
-        $response = $this->client->request('GET', self::NEWS_SITE_URL);
-        $statusCode = $response->getStatusCode();
+        $this->getCrawlerFromSource();
 
-        if ($statusCode !== 200) {
-            throw new Exception('Response status is not 200');
-        }
-
-        $crawler = new Crawler($response->getContent());
-
-        $articleLinks = $crawler
+        $articleLinks = $this->crawler
             ->filter('.js-news-feed-list')
             ->filter('a[href]')
             ->each(function (Crawler $node) {
@@ -45,7 +39,6 @@ class ParseContentByUrl
         $articleLinks = array_filter($articleLinks);
 
         $news = [];
-        $index = 1;
 
         foreach ($articleLinks as $articleLink) {
             $article = new News();
@@ -65,10 +58,20 @@ class ParseContentByUrl
 
             $news[] = $article;
 
-            ++$index;
         }
 
         return $news;
     }
-}
 
+    protected function getCrawlerFromSource()
+    {
+        $response = $this->client->request('GET', self::NEWS_SITE_URL);
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode !== 200) {
+            throw new Exception('Response status is not 200');
+        }
+
+        $this->crawler = new Crawler($response->getContent());
+    }
+}
