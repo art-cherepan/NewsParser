@@ -7,8 +7,6 @@ use App\Repository\NewsRepository;
 use App\Serializer\Normalizer\NewsNormalizer;
 use App\Serializer\Normalizer\NewsRatingNormalizer;
 use App\Services\NewsResolver;
-use App\Services\ParseContentByFile;
-use App\Services\ParseContentByUrl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,14 +19,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class NewsController extends AbstractController
 {
     private NewsRepository $newsRepository;
+    private NewsNormalizer $newsNormalizer;
+    private NewsRatingNormalizer $newsRatingNormalizer;
 
-    public function __construct(NewsRepository $newsRepository)
+    public function __construct(NewsRepository $newsRepository, NewsNormalizer $newsNormalizer, NewsRatingNormalizer $newsRatingNormalizer)
     {
         $this->newsRepository = $newsRepository;
+        $this->newsNormalizer = $newsNormalizer;
+        $this->newsRatingNormalizer = $newsRatingNormalizer;
     }
 
     /**
      * @Route("/", name="api_news")
+     * @throws \Exception
      */
     public function ApiNews(Request $request): Response
     {
@@ -38,9 +41,7 @@ class NewsController extends AbstractController
         $resolver = new NewsResolver($this->newsRepository);
         $news = $resolver->getNews($index, $count);
 
-        $normalizer = new NewsNormalizer();
-
-        $data = $normalizer->getNormalizedData($news, $count);
+        $data = $this->newsNormalizer->normalize($news, $count);
 
         return new JsonResponse($data);
     }
@@ -51,9 +52,8 @@ class NewsController extends AbstractController
     public function ApiGetNewsRating(): Response
     {
         $ratings = $this->newsRepository->findRatingForAll();
-        $normalizer = new NewsRatingNormalizer();
 
-        return new JsonResponse($normalizer->normalize($ratings));
+        return new JsonResponse($this->newsRatingNormalizer->normalize($ratings));
     }
 
     /**

@@ -2,9 +2,9 @@
 
 namespace App\Serializer\Normalizer;
 
-class NewsRatingNormalizer
+class NewsRatingNormalizer implements NormalizerInterface
 {
-    public function normalize(array $arr)
+    public function normalize($arr, $count = 0): array
     {
         $ratings = [];
 
