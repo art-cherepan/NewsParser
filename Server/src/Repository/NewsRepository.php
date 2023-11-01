@@ -29,7 +29,7 @@ class NewsRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return News[]
+     * @return array<News>
      */
     public function findByStartIdAndCount($id, $count): array
     {
@@ -43,7 +43,7 @@ class NewsRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return News[]
+     * @return array<News>
      */
     public function findFirstByCount($count): array
     {

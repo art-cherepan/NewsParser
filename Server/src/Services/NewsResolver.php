@@ -15,7 +15,7 @@ class NewsResolver
     }
 
     /**
-     * @return News[]
+     * @return array<News>
      */
     public function getNews(int $index, int $count): array
     {

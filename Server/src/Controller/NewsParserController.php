@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Repository\NewsRepository;
-use App\Services\ParseContentByFile;
-use App\Services\ParseContentByUrl;
+use App\Services\ContentParserByFile;
+use App\Services\ContentParserByUrl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,10 +24,9 @@ class NewsParserController extends AbstractController
     /**
      * @Route("/save-by-file/", name="news_save_by_file")
      */
-    public function saveByFile(): Response
+    public function saveByFile(ContentParserByFile $contentParser): Response
     {
-        $parseContentService = new ParseContentByFile();
-        $news = $parseContentService->getNewsFromSource();
+        $news = $contentParser->getNews();
 
         foreach ($news as $article) {
             $this->newsRepository->save($article);
@@ -39,10 +38,9 @@ class NewsParserController extends AbstractController
     /**
      * @Route("/save-by-url/", name="save_by_url")
      */
-    public function saveByUrl(): Response
+    public function saveByUrl(ContentParserByUrl $contentParser): Response
     {
-        $parseContentService = new ParseContentByUrl();
-        $news = $parseContentService->getNewsFromSource();
+        $news = $contentParser->getNews();
 
         foreach ($news as $article) {
             $this->newsRepository->save($article);

@@ -5,20 +5,14 @@ namespace App\Services;
 use App\Entity\News;
 use Symfony\Component\DomCrawler\Crawler;
 
-class ContentParserByFile extends ContentParser
+class ContentParserByFile extends AbstractContentParser
 {
-    private const HTML_EXTERNAL_SOURCE_CONTENT = '/../../content/rbcContent.html';
-
-    private Crawler $crawler;
-
     /**
      * @return array<News>
      */
     public function getNews(): array
     {
-        $this->getCrawlerFromSource();
-
-        $articleLinks = $this->crawler
+        $articleLinks = $this->crawlerHelper->getCrawlerFile()
             ->filter('.js-news-feed-list')
             ->filter('a[href]')
             ->each(function(Crawler $node) {
@@ -51,12 +45,6 @@ class ContentParserByFile extends ContentParser
         }
 
         return $news;
-    }
-
-    protected function getCrawlerFromSource()
-    {
-        $html = file_get_contents(__DIR__ . ContentParserByFile::HTML_EXTERNAL_SOURCE_CONTENT);
-        $this->crawler = new Crawler($html);
     }
 }
 
