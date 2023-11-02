@@ -32,7 +32,6 @@ export default {
   },
   computed: {
     ratingUp() {
-      console.log('up ' + this.$store.getters.getFlagById(parseInt(this.id)).flag);
       return this.$store.getters.getFlagById(parseInt(this.id)).flag === 2;
     },
     ratingDown() {
